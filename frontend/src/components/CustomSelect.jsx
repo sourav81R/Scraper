@@ -10,6 +10,7 @@ const CustomSelect = ({
 }) => {
   const containerRef = useRef(null);
   const [open, setOpen] = useState(false);
+  const [menuPlacement, setMenuPlacement] = useState("bottom");
 
   const selectedOption =
     options.find((option) => option.value === value) || options[0];
@@ -36,6 +37,39 @@ const CustomSelect = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (!open) {
+      return undefined;
+    }
+
+    const updatePlacement = () => {
+      const rect = containerRef.current?.getBoundingClientRect();
+
+      if (!rect) {
+        return;
+      }
+
+      const estimatedMenuHeight = Math.min(options.length * 46 + 16, 304);
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      setMenuPlacement(
+        spaceBelow < estimatedMenuHeight && spaceAbove > spaceBelow
+          ? "top"
+          : "bottom"
+      );
+    };
+
+    updatePlacement();
+    window.addEventListener("resize", updatePlacement);
+    window.addEventListener("scroll", updatePlacement, true);
+
+    return () => {
+      window.removeEventListener("resize", updatePlacement);
+      window.removeEventListener("scroll", updatePlacement, true);
+    };
+  }, [open, options.length]);
+
   return (
     <div
       className={cn("relative", open ? "z-50" : "z-10", className)}
@@ -59,7 +93,14 @@ const CustomSelect = ({
       </button>
 
       {open ? (
-        <div className="absolute left-0 right-0 top-[calc(100%+0.55rem)] z-[60] overflow-hidden rounded-[22px] border border-[var(--border-strong)] bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(246,249,255,0.94))] p-2 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl">
+        <div
+          className={cn(
+            "absolute left-0 right-0 z-[60] overflow-hidden rounded-[22px] border border-[var(--border-strong)] bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(246,249,255,0.94))] p-2 shadow-[0_24px_60px_rgba(15,23,42,0.16)] backdrop-blur-2xl",
+            menuPlacement === "top"
+              ? "bottom-[calc(100%+0.55rem)]"
+              : "top-[calc(100%+0.55rem)]"
+          )}
+        >
           <div className="max-h-72 overflow-y-auto pr-1">
             {options.map((option) => {
               const isSelected = option.value === value;
