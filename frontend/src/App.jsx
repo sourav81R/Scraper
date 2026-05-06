@@ -31,10 +31,10 @@ const App = () => {
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
               <Route element={<Home />} path="/" />
-              <Route element={<Stories />} path="/stories" />
               <Route element={<Login />} path="/login" />
               <Route element={<Register />} path="/register" />
               <Route element={<ProtectedRoute />}>
+                <Route element={<Stories />} path="/stories" />
                 <Route element={<Bookmarks />} path="/bookmarks" />
               </Route>
               <Route element={<NotFound />} path="*" />

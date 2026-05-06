@@ -7,7 +7,7 @@ import {
   Gauge,
   Globe2,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import PageTransition from "../components/PageTransition";
 import SkeletonGrid from "../components/SkeletonGrid";
@@ -38,6 +38,7 @@ const featureCards = [
 ];
 
 const Home = () => {
+  const navigate = useNavigate();
   const { fetchStats, fetchStories, toggleBookmark } = useStories();
   const { isAuthenticated, user } = useAuth();
   const { pushToast } = useToast();
@@ -103,6 +104,24 @@ const Home = () => {
     }
   };
 
+  const handleStoriesAccess = () => {
+    if (isAuthenticated) {
+      navigate("/stories");
+      return;
+    }
+
+    navigate("/login", { state: { from: "/stories" } });
+  };
+
+  const handleBookmarksAccess = () => {
+    if (isAuthenticated) {
+      navigate("/bookmarks");
+      return;
+    }
+
+    navigate("/login", { state: { from: "/bookmarks" } });
+  };
+
   return (
     <PageTransition className="px-4 pb-16 pt-8 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
@@ -126,14 +145,13 @@ const Home = () => {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button onClick={() => {}} className="min-w-[170px]" as={Link} to="/stories">
+                <Button className="min-w-[170px]" onClick={handleStoriesAccess}>
                   Explore stories
                   <ArrowRight className="h-4 w-4" />
                 </Button>
                 <Button
-                  as={Link}
                   className="min-w-[170px]"
-                  to="/bookmarks"
+                  onClick={handleBookmarksAccess}
                   variant="secondary"
                 >
                   Open bookmarks
@@ -241,16 +259,16 @@ const Home = () => {
 
         <section className="grid gap-8 lg:grid-cols-[1fr_0.92fr]">
           <div>
-            <div className="mb-6 flex items-end justify-between gap-4">
+            <div className="mb-4 flex items-end justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
                   Featured stories
                 </p>
-                <h2 className="mt-3 text-3xl font-semibold text-[var(--text-primary)]">
+                <h2 className="mt-2 text-2xl font-semibold leading-tight text-[var(--text-primary)] sm:text-[2rem]">
                   A clean preview of today’s strongest links
                 </h2>
               </div>
-              <Button as={Link} to="/stories" variant="ghost">
+              <Button onClick={handleStoriesAccess} size="sm" variant="ghost">
                 View full feed
               </Button>
             </div>
@@ -258,7 +276,7 @@ const Home = () => {
             {loading ? (
               <SkeletonGrid count={3} />
             ) : (
-              <div className="grid gap-5 xl:grid-cols-3">
+              <div className="home-story-preview grid gap-4 xl:grid-cols-3">
                 {stories.map((story) => (
                   <StoryCard
                     isAuthenticated={isAuthenticated}

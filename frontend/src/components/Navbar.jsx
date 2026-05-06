@@ -8,7 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { cn } from "../lib/utils";
 import Button from "./Button";
@@ -20,10 +20,25 @@ const navigationItems = [
 ];
 
 const Navbar = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, logout, user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+
+  const getNavigationTarget = (targetPath) =>
+    targetPath === "/stories" && !isAuthenticated
+      ? {
+          pathname: "/login",
+          state: { from: targetPath },
+        }
+      : targetPath;
+
+  const isStoriesActive =
+    location.pathname === "/stories" ||
+    (!isAuthenticated &&
+      location.pathname === "/login" &&
+      location.state?.from === "/stories");
 
   const handleLogout = async () => {
     await logout();
@@ -55,13 +70,13 @@ const Navbar = () => {
               className={({ isActive }) =>
                 cn(
                   "rounded-full px-4 py-2 text-sm font-medium transition",
-                  isActive
+                  isActive || (item.to === "/stories" && isStoriesActive)
                     ? "bg-[var(--panel-strong)] text-[var(--text-primary)]"
                     : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 )
               }
               key={item.to}
-              to={item.to}
+              to={getNavigationTarget(item.to)}
             >
               {item.label}
             </NavLink>
@@ -175,14 +190,14 @@ const Navbar = () => {
                   className={({ isActive }) =>
                     cn(
                       "rounded-2xl px-4 py-3 text-sm font-medium transition",
-                      isActive
+                      isActive || (item.to === "/stories" && isStoriesActive)
                         ? "bg-[var(--panel)] text-[var(--text-primary)]"
                         : "text-[var(--text-secondary)] hover:bg-[var(--panel)]"
                     )
                   }
                   key={item.to}
                   onClick={() => setMobileOpen(false)}
-                  to={item.to}
+                  to={getNavigationTarget(item.to)}
                 >
                   {item.label}
                 </NavLink>

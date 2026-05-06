@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthShowcase from "../components/AuthShowcase";
 import Button from "../components/Button";
 import FormField from "../components/FormField";
+import GoogleIcon from "../components/GoogleIcon";
 import PageTransition from "../components/PageTransition";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
@@ -62,24 +63,24 @@ const Login = () => {
 
   return (
     <PageTransition className="px-4 pb-16 pt-8 sm:px-6 lg:px-8">
-      <div className="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className="mx-auto grid w-full max-w-6xl gap-5 lg:grid-cols-[0.9fr_1fr]">
         <AuthShowcase
           caption="Sign in"
           title="Return to a focused feed of stories worth your attention."
         />
 
-        <section className="glass-panel rounded-[36px] border border-[var(--border)] p-6 sm:p-8 lg:p-10">
+        <section className="glass-panel rounded-[34px] border border-[var(--border)] p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] sm:p-7 lg:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[var(--accent)]">
             Welcome back
           </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-[var(--text-primary)]">
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-[2.65rem]">
             Log in to manage bookmarks
           </h1>
           <p className="mt-3 text-sm text-[var(--text-secondary)]">
             Pick up right where you left off with your saved reading queue.
           </p>
 
-          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+          <form className="mt-7 space-y-4.5" onSubmit={handleSubmit}>
             <FormField
               autoComplete="email"
               id="email"
@@ -123,7 +124,7 @@ const Login = () => {
 
             <Button className="w-full justify-center" size="lg" type="submit">
               <LogIn className="h-4 w-4" />
-              {submitting ? "Signing in…" : "Login"}
+              {submitting ? "Signing in..." : "Login"}
             </Button>
 
             <div className="flex items-center gap-3">
@@ -135,17 +136,18 @@ const Login = () => {
             </div>
 
             <Button
-              className="w-full justify-center"
+              className="w-full justify-center border-white/60 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(248,250,255,0.96))] shadow-[0_16px_40px_rgba(15,23,42,0.08)] hover:border-[var(--border-strong)] hover:bg-white"
               disabled={!googleAvailable || googleStatusLoading || googleSubmitting}
               onClick={handleGoogle}
               size="lg"
               type="button"
               variant="secondary"
             >
+              <GoogleIcon className="h-[18px] w-[18px]" />
               {googleStatusLoading
-                ? "Checking Google sign-in…"
+                ? "Checking Google sign-in..."
                 : googleSubmitting
-                  ? "Connecting…"
+                  ? "Connecting..."
                   : googleAvailable
                     ? "Continue with Google"
                     : "Google sign-in unavailable"}
