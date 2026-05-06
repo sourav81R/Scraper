@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BookmarkCheck, Clock3 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
 import PageTransition from "../components/PageTransition";
@@ -13,6 +13,7 @@ import { useToast } from "../context/ToastContext";
 import { formatRelativeTime, normalizeApiError } from "../lib/utils";
 
 const Bookmarks = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { fetchBookmarks, toggleBookmark } = useStories();
   const { pushToast } = useToast();
@@ -116,7 +117,7 @@ const Bookmarks = () => {
         {!loading && stories.length === 0 ? (
           <EmptyState
             action={
-              <Button as={Link} to="/stories">
+              <Button onClick={() => navigate("/stories")}>
                 Browse stories
               </Button>
             }
