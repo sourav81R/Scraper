@@ -38,7 +38,7 @@ const quickLinks = [
 const companyLinks = [
   {
     label: "About Project",
-    href: "https://github.com/sourav81R/Scraper",
+    to: "/about",
   },
   {
     label: "Live Portfolio",
@@ -182,15 +182,21 @@ const Footer = () => (
           <h3 className="footer-classic__heading">Company</h3>
           <div className="mt-5 space-y-3.5">
             {companyLinks.map((item) => (
-              <a
-                className="footer-classic__link"
-                href={item.href}
-                key={item.label}
-                rel="noreferrer"
-                target="_blank"
-              >
-                {item.label}
-              </a>
+              item.to ? (
+                <Link className="footer-classic__link" key={item.label} to={item.to}>
+                  {item.label}
+                </Link>
+              ) : (
+                <a
+                  className="footer-classic__link"
+                  href={item.href}
+                  key={item.label}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {item.label}
+                </a>
+              )
             ))}
           </div>
         </div>

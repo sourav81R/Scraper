@@ -8,6 +8,7 @@ import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const Home = lazy(() => import("./pages/Home"));
+const About = lazy(() => import("./pages/About"));
 const Stories = lazy(() => import("./pages/Stories"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -31,6 +32,7 @@ const App = () => {
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
               <Route element={<Home />} path="/" />
+              <Route element={<About />} path="/about" />
               <Route element={<Login />} path="/login" />
               <Route element={<Register />} path="/register" />
               <Route element={<ProtectedRoute />}>
