@@ -6,6 +6,28 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+const GitHubIcon = () => (
+  <svg
+    aria-hidden="true"
+    className="h-[18px] w-[18px]"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.42-4.04-1.42-.54-1.38-1.34-1.75-1.34-1.75-1.1-.75.08-.73.08-.73 1.21.09 1.85 1.25 1.85 1.25 1.08 1.84 2.83 1.31 3.52 1 .11-.78.42-1.31.77-1.61-2.67-.3-5.47-1.33-5.47-5.92 0-1.31.47-2.39 1.24-3.23-.12-.31-.54-1.55.12-3.23 0 0 1.01-.32 3.3 1.23a11.6 11.6 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.68.24 2.92.12 3.23.77.84 1.24 1.92 1.24 3.23 0 4.6-2.8 5.61-5.48 5.91.43.38.82 1.1.82 2.22v3.29c0 .32.21.7.83.58A12 12 0 0 0 12 .5Z" />
+  </svg>
+);
+
+const LinkedInIcon = () => (
+  <svg
+    aria-hidden="true"
+    className="h-[18px] w-[18px]"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path d="M4.98 3.5A2.48 2.48 0 1 0 5 8.46 2.48 2.48 0 0 0 4.98 3.5ZM3 9.98h3.97V21H3V9.98Zm7.14 0H13.95v1.5H14c.53-1 1.84-2.06 3.8-2.06 4.06 0 4.8 2.67 4.8 6.14V21h-3.97v-4.84c0-1.15-.02-2.63-1.6-2.63-1.6 0-1.85 1.25-1.85 2.55V21h-3.97V9.98Z" />
+  </svg>
+);
+
 const quickLinks = [
   { label: "Home", to: "/" },
   { label: "Stories", to: "/stories" },
@@ -36,12 +58,12 @@ const socialLinks = [
   {
     label: "GitHub",
     href: "https://github.com/sourav81R",
-    icon: FolderGit2,
+    icon: GitHubIcon,
   },
   {
     label: "LinkedIn",
     href: "https://www.linkedin.com/in/souravchowdhury-2003r/",
-    icon: UserRound,
+    icon: LinkedInIcon,
   },
   {
     label: "Portfolio",
@@ -117,8 +139,8 @@ const StoreIcon = ({ type }) => {
 };
 
 const Footer = () => (
-  <footer className="px-4 pb-10 pt-10">
-    <div className="footer-classic mx-auto w-full max-w-7xl rounded-[34px] border border-[rgba(247,164,92,0.24)] px-6 py-10 sm:px-8 lg:px-12">
+  <footer className="px-3 pb-10 pt-10 sm:px-4">
+    <div className="footer-classic mx-auto w-full max-w-none rounded-[34px] border border-[rgba(247,164,92,0.24)] px-6 py-10 sm:px-8 lg:px-12">
       <div className="grid gap-10 md:grid-cols-2 xl:grid-cols-[1.12fr_0.82fr_0.9fr_1.1fr_1fr]">
         <div>
           <p className="text-[2rem] font-semibold italic tracking-tight text-[var(--footer-brand)]">
