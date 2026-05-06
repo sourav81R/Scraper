@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
 const AuthContext = createContext(null);
 
@@ -30,7 +32,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(nextUser));
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await signOut(auth).catch(() => {});
     setToken(null);
     setUser(null);
     localStorage.removeItem("token");

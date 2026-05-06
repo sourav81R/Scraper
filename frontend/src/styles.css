@@ -266,6 +266,49 @@ input {
   background: #fffdf9;
 }
 
+.auth-divider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.2rem 0;
+  color: #7a8f98;
+  font-size: 0.9rem;
+}
+
+.auth-divider::before {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto;
+  border-top: 1px solid rgba(18, 33, 38, 0.12);
+}
+
+.auth-divider span {
+  position: relative;
+  padding: 0 0.8rem;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.google-button {
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(18, 33, 38, 0.14);
+  background: #ffffff;
+  color: #122126;
+  font-weight: 600;
+}
+
+.google-button:hover {
+  transform: translateY(-1px);
+  background: #f9fbfc;
+}
+
+.google-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .form-error {
   margin: 0.1rem 0;
 }
