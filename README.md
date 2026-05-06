@@ -59,12 +59,34 @@ Backend `.env`
 PORT=5000
 MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/hn-tracker
 JWT_SECRET=your_jwt_secret_here
+CORS_ORIGINS=http://localhost:5173,https://scraper-hn.vercel.app
 ```
 
 Frontend `.env`
 
 ```env
 VITE_API_URL=http://localhost:5000
+```
+
+Vite mode-based frontend env files included in this repo:
+
+- `frontend/.env.development` points to `http://localhost:5000`
+- `frontend/.env.production` points to `https://scraper-ii5g.onrender.com`
+
+That means:
+
+- local `npm run dev` uses your local backend
+- production `npm run build` uses your live Render backend
+
+Backend CORS allows both:
+
+- local Vite frontend at `http://localhost:5173`
+- live frontend at `https://scraper-hn.vercel.app`
+
+For Render, set:
+
+```env
+CORS_ORIGINS=http://localhost:5173,https://scraper-hn.vercel.app
 ```
 
 ## API Endpoints
