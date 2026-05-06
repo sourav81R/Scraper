@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      index: true,
     },
     password: {
       type: String,
@@ -31,6 +32,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
       sparse: true,
+      index: true,
+    },
+    avatarUrl: {
+      type: String,
+      default: "",
+      trim: true,
     },
     bookmarks: [
       {
@@ -41,6 +48,13 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      transform(doc, ret) {
+        delete ret.password;
+        delete ret.__v;
+        return ret;
+      },
+    },
   }
 );
 

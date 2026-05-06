@@ -1,29 +1,11 @@
 const jwt = require("jsonwebtoken");
+const { env } = require("./env");
 
 const FIREBASE_CERTS_URL =
   "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com";
 
 let cachedCerts = null;
 let certsExpireAt = 0;
-
-const isMissingOrPlaceholder = (value) => {
-  if (!value) {
-    return true;
-  }
-
-  const normalizedValue = value.trim();
-
-  return (
-    normalizedValue.length === 0 ||
-    normalizedValue.includes("your_firebase") ||
-    normalizedValue.includes("your-project-id")
-  );
-};
-
-const getProjectId = () => {
-  const projectId = process.env.FIREBASE_PROJECT_ID?.trim();
-  return isMissingOrPlaceholder(projectId) ? "" : projectId;
-};
 
 const getCacheMaxAgeSeconds = (cacheControlHeader) => {
   if (!cacheControlHeader) {
@@ -33,6 +15,8 @@ const getCacheMaxAgeSeconds = (cacheControlHeader) => {
   const match = cacheControlHeader.match(/max-age=(\d+)/i);
   return match ? Number.parseInt(match[1], 10) : 3600;
 };
+
+const getFirebaseProjectId = () => env.FIREBASE_PROJECT_ID?.trim() || "";
 
 const getFirebaseCerts = async () => {
   if (cachedCerts && Date.now() < certsExpireAt) {
@@ -57,7 +41,7 @@ const getFirebaseCerts = async () => {
 };
 
 const verifyFirebaseToken = async (idToken) => {
-  const projectId = getProjectId();
+  const projectId = getFirebaseProjectId();
 
   if (!projectId) {
     throw new Error("Firebase project ID is not configured");
@@ -106,12 +90,17 @@ const verifyFirebaseToken = async (idToken) => {
   return {
     uid: verifiedPayload.user_id || verifiedPayload.sub,
     email: verifiedPayload.email,
+    emailVerified: verifiedPayload.email_verified,
     name: verifiedPayload.name,
     picture: verifiedPayload.picture,
     ...verifiedPayload,
   };
 };
 
-const isFirebaseAuthConfigured = () => Boolean(getProjectId());
+const isFirebaseAuthConfigured = () => Boolean(getFirebaseProjectId());
 
-module.exports = { verifyFirebaseToken, isFirebaseAuthConfigured };
+module.exports = {
+  getFirebaseProjectId,
+  isFirebaseAuthConfigured,
+  verifyFirebaseToken,
+};

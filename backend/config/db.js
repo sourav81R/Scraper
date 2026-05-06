@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const { env } = require("./env");
+const logger = require("../utils/logger");
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -7,17 +9,18 @@ const connectDB = async () => {
 
   for (let attempt = 1; attempt <= maxRetries; attempt += 1) {
     try {
-      await mongoose.connect(process.env.MONGO_URI, {
+      await mongoose.connect(env.MONGO_URI, {
         serverSelectionTimeoutMS: 30000,
         socketTimeoutMS: 45000,
         family: 4,
       });
-      console.log("MongoDB connected successfully");
-      return;
+
+      logger.info("MongoDB connected successfully");
+      return mongoose.connection;
     } catch (error) {
-      console.error(
-        `MongoDB connection failed (attempt ${attempt}/${maxRetries}):`,
-        error.message
+      logger.error(
+        `MongoDB connection failed (attempt ${attempt}/${maxRetries})`,
+        error
       );
 
       if (attempt === maxRetries) {
@@ -27,6 +30,8 @@ const connectDB = async () => {
       await wait(3000);
     }
   }
+
+  return null;
 };
 
 module.exports = connectDB;

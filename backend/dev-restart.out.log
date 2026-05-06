@@ -1,0 +1,25 @@
+
+> hn-tracker-backend@1.0.0 dev
+> nodemon server.js
+
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,json[39m
+[32m[nodemon] starting `node server.js`[39m
+[2026-05-06T20:18:10.792Z] INFO: MongoDB connected successfully
+[2026-05-06T20:18:10.802Z] INFO: Server running on port 5001
+[2026-05-06T20:18:11.079Z] INFO: Scraper started via startup
+[2026-05-06T20:18:13.434Z] INFO: Scraper completed with 10 stories in 2150ms
+[0mGET /api/health [32m200[0m 311.169 ms - 188[0m
+[0mGET /api/health [32m200[0m 244.892 ms - 188[0m
+[0mGET /api/health [32m200[0m 111.805 ms - 188[0m
+[0mGET /favicon.ico [33m404[0m 1.637 ms - 63[0m
+[0mGET /api/stories?page=2&limit=9&search=&domain=&sortBy=points&order=desc [32m200[0m 1109.274 ms - 4425[0m
+[0mGET /api/stories?page=3&limit=9&search=&domain=&sortBy=points&order=desc [32m200[0m 114.586 ms - 1969[0m
+[2026-05-06T20:19:47.744Z] INFO: Scraper started via manual
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[2026-05-06T20:19:52.070Z] INFO: MongoDB connected successfully
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m

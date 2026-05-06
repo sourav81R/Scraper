@@ -1,118 +1,307 @@
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  BarChart3,
+  BookmarkCheck,
+  Flame,
+  Gauge,
+  Globe2,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../api/axios";
+import PageTransition from "../components/PageTransition";
+import SkeletonGrid from "../components/SkeletonGrid";
+import StatCard from "../components/StatCard";
 import StoryCard from "../components/StoryCard";
+import Button from "../components/Button";
+import { useStories } from "../context/StoryContext";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { formatRelativeTime, normalizeApiError } from "../lib/utils";
+
+const featureCards = [
+  {
+    title: "High-signal surfacing",
+    copy: "Sort by points, freshness, and comment velocity to find the stories worth your time.",
+    icon: Gauge,
+  },
+  {
+    title: "Bookmark-first workflow",
+    copy: "Save promising links into a persistent reading queue across sessions and devices.",
+    icon: BookmarkCheck,
+  },
+  {
+    title: "Global domain pulse",
+    copy: "Track which sites dominate Hacker News without leaving a single responsive dashboard.",
+    icon: Globe2,
+  },
+];
 
 const Home = () => {
-  const { isAuthenticated, updateBookmarks, user } = useAuth();
+  const { fetchStats, fetchStories, toggleBookmark } = useStories();
+  const { isAuthenticated, user } = useAuth();
+  const { pushToast } = useToast();
+  const [stats, setStats] = useState(null);
   const [stories, setStories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [bookmarkIds, setBookmarkIds] = useState(user?.bookmarks || []);
   const [bookmarkPendingId, setBookmarkPendingId] = useState("");
 
   useEffect(() => {
-    setBookmarkIds(user?.bookmarks || []);
-  }, [user]);
+    let cancelled = false;
 
-  useEffect(() => {
-    const fetchStories = async () => {
+    const loadDashboard = async () => {
       try {
         setLoading(true);
-        setError("");
+        const [statsResponse, storiesResponse] = await Promise.all([
+          fetchStats(),
+          fetchStories({ page: 1, limit: 3, sortBy: "points", order: "desc" }),
+        ]);
 
-        const { data } = await api.get("/api/stories", {
-          params: { page, limit: 10 },
-        });
-
-        setStories(data.data);
-        setTotalPages(data.totalPages || 1);
-      } catch (requestError) {
-        setError(
-          requestError.response?.data?.message || "Unable to load stories right now"
-        );
+        if (!cancelled) {
+          setStats(statsResponse.data);
+          setStories(storiesResponse.data);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          pushToast({
+            title: "Unable to load the dashboard",
+            description: normalizeApiError(error, "Please try again shortly."),
+            variant: "error",
+          });
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchStories();
-  }, [page]);
+    loadDashboard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchStats, fetchStories, pushToast]);
 
   const handleBookmark = async (storyId) => {
     try {
       setBookmarkPendingId(storyId);
-      const { data } = await api.post(`/api/stories/${storyId}/bookmark`);
-      const nextBookmarks = Array.isArray(data.data) ? data.data : [];
-
-      setBookmarkIds(nextBookmarks);
-      updateBookmarks(nextBookmarks);
-    } catch (requestError) {
-      setError(
-        requestError.response?.data?.message || "Unable to update bookmark right now"
-      );
+      const response = await toggleBookmark(storyId);
+      pushToast({
+        title: response.data.bookmarked ? "Story saved" : "Bookmark removed",
+        description: response.message,
+        variant: "success",
+      });
+    } catch (error) {
+      pushToast({
+        title: "Bookmark update failed",
+        description: normalizeApiError(error, "Please try again."),
+        variant: "error",
+      });
     } finally {
       setBookmarkPendingId("");
     }
   };
 
   return (
-    <section className="page-shell">
-      <div className="page-hero">
-        <p className="eyebrow">Top Hacker News</p>
-        <h1>Track the stories people cannot stop talking about.</h1>
-        <p className="page-copy">
-          Freshly scraped headlines, sorted by score, with simple bookmarking for
-          your reading queue.
-        </p>
-      </div>
+    <PageTransition className="px-4 pb-16 pt-8 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
+        <section className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr]">
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-panel relative overflow-hidden rounded-[40px] border border-[var(--border)] px-6 py-8 sm:px-8 lg:px-10"
+            initial={{ opacity: 0, y: 20 }}
+          >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.24),transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(248,113,113,0.18),transparent_32%)]" />
+            <div className="relative z-10">
+              <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[var(--accent)]">
+                Modern story intelligence
+              </p>
+              <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-5xl lg:text-6xl">
+                Turn Hacker News momentum into a clean, bookmarkable signal feed.
+              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--text-secondary)]">
+                Scraped automatically, ranked clearly, and packaged in a polished
+                interface that feels more like a startup product than an assignment.
+              </p>
 
-      {error ? <p className="status-card error">{error}</p> : null}
-      {loading ? <p className="status-card">Loading stories...</p> : null}
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button onClick={() => {}} className="min-w-[170px]" as={Link} to="/stories">
+                  Explore stories
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  as={Link}
+                  className="min-w-[170px]"
+                  to="/bookmarks"
+                  variant="secondary"
+                >
+                  Open bookmarks
+                </Button>
+              </div>
 
-      {!loading ? (
-        <>
-          <div className="story-grid">
-            {stories.map((story) => (
-              <StoryCard
-                bookmarkPending={bookmarkPendingId === story._id}
-                isAuthenticated={isAuthenticated}
-                isBookmarked={bookmarkIds.includes(story._id)}
-                key={story._id}
-                onBookmark={handleBookmark}
-                story={story}
-              />
+              <div className="mt-10 grid gap-4 sm:grid-cols-3">
+                <div className="rounded-[28px] border border-[var(--border)] bg-[var(--panel)]/80 p-4">
+                  <p className="text-sm text-[var(--text-secondary)]">Last scrape</p>
+                  <p className="mt-2 text-lg font-semibold text-[var(--text-primary)]">
+                    {stats?.lastScrapedAt
+                      ? formatRelativeTime(stats.lastScrapedAt)
+                      : "Syncing"}
+                  </p>
+                </div>
+                <div className="rounded-[28px] border border-[var(--border)] bg-[var(--panel)]/80 p-4">
+                  <p className="text-sm text-[var(--text-secondary)]">Saved by you</p>
+                  <p className="mt-2 text-lg font-semibold text-[var(--text-primary)]">
+                    {user?.bookmarks?.length || 0}
+                  </p>
+                </div>
+                <div className="rounded-[28px] border border-[var(--border)] bg-[var(--panel)]/80 p-4">
+                  <p className="text-sm text-[var(--text-secondary)]">Peak points</p>
+                  <p className="mt-2 text-lg font-semibold text-[var(--text-primary)]">
+                    {stats?.maxPoints || 0}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-panel rounded-[40px] border border-[var(--border)] p-6"
+            initial={{ opacity: 0, y: 24 }}
+            transition={{ delay: 0.08 }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-[var(--text-secondary)]">Live signal board</p>
+                <h2 className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">
+                  What is trending right now
+                </h2>
+              </div>
+              <span className="rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[var(--accent)]">
+                Top 3
+              </span>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              {stories.map((story, index) => (
+                <div
+                  className="rounded-[24px] border border-[var(--border)] bg-[var(--panel-strong)] p-4"
+                  key={story._id}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent)]">
+                      <Flame className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-muted)]">
+                        Story {index + 1}
+                      </p>
+                      <p className="text-sm font-semibold text-[var(--text-primary)]">
+                        {story.title}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between text-sm text-[var(--text-secondary)]">
+                    <span>{story.domain}</span>
+                    <span>{story.points} pts</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </section>
+
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            description="Tracked and ready to sort"
+            icon={BarChart3}
+            title="Stories indexed"
+            value={stats?.totalStories || 0}
+          />
+          <StatCard
+            description="Average score across the feed"
+            icon={Flame}
+            title="Average points"
+            value={stats?.avgPoints || 0}
+          />
+          <StatCard
+            description="Unique sites appearing in the top stories"
+            icon={Globe2}
+            title="Active domains"
+            value={stats?.uniqueDomains || 0}
+          />
+          <StatCard
+            description="Persistent saves across accounts"
+            icon={BookmarkCheck}
+            title="Bookmarks stored"
+            value={stats?.totalBookmarks || 0}
+          />
+        </section>
+
+        <section className="grid gap-8 lg:grid-cols-[1fr_0.92fr]">
+          <div>
+            <div className="mb-6 flex items-end justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
+                  Featured stories
+                </p>
+                <h2 className="mt-3 text-3xl font-semibold text-[var(--text-primary)]">
+                  A clean preview of today’s strongest links
+                </h2>
+              </div>
+              <Button as={Link} to="/stories" variant="ghost">
+                View full feed
+              </Button>
+            </div>
+
+            {loading ? (
+              <SkeletonGrid count={3} />
+            ) : (
+              <div className="grid gap-5 xl:grid-cols-3">
+                {stories.map((story) => (
+                  <StoryCard
+                    isAuthenticated={isAuthenticated}
+                    isBookmarked={Boolean(user?.bookmarks?.includes(story._id))}
+                    isBookmarkPending={bookmarkPendingId === story._id}
+                    key={story._id}
+                    onBookmark={handleBookmark}
+                    onCopy={() =>
+                      pushToast({
+                        title: "Link copied",
+                        description: "Story URL copied to your clipboard.",
+                        variant: "success",
+                      })
+                    }
+                    story={story}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-4">
+            {featureCards.map((feature) => (
+              <motion.div
+                className="glass-panel rounded-[30px] border border-[var(--border)] p-6"
+                key={feature.title}
+                whileHover={{ y: -4 }}
+              >
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent)]">
+                  <feature.icon className="h-5 w-5" />
+                </span>
+                <h3 className="mt-5 text-xl font-semibold text-[var(--text-primary)]">
+                  {feature.title}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
+                  {feature.copy}
+                </p>
+              </motion.div>
             ))}
           </div>
-
-          {stories.length === 0 ? (
-            <p className="status-card">No stories available yet. Trigger a scrape to begin.</p>
-          ) : null}
-
-          <div className="pagination">
-            <button
-              disabled={page === 1}
-              onClick={() => setPage((currentPage) => currentPage - 1)}
-              type="button"
-            >
-              Previous
-            </button>
-            <span>
-              Page {page} of {totalPages}
-            </span>
-            <button
-              disabled={page >= totalPages}
-              onClick={() => setPage((currentPage) => currentPage + 1)}
-              type="button"
-            >
-              Next
-            </button>
-          </div>
-        </>
-      ) : null}
-    </section>
+        </section>
+      </div>
+    </PageTransition>
   );
 };
 

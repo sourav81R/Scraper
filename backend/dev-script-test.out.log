@@ -1,0 +1,19 @@
+
+> hn-tracker-backend@1.0.0 dev
+> node scripts/dev.js
+
+[dev] Port 5001 is busy. Stopping existing process: 29264
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,json[39m
+[32m[nodemon] starting `node server.js`[39m
+[2026-05-06T20:20:11.927Z] INFO: MongoDB connected successfully
+[2026-05-06T20:20:11.996Z] INFO: Server running on port 5001
+[2026-05-06T20:20:12.323Z] INFO: Scraper started via startup
+[2026-05-06T20:20:14.986Z] INFO: Scraper completed with 10 stories in 2563ms
+[2026-05-06T20:20:15.862Z] INFO: Scraper started via manual
+[2026-05-06T20:20:16.824Z] INFO: Scraper completed with 10 stories in 759ms
+[0mPOST /api/scrape [32m200[0m 1064.285 ms - 5004[0m
+[0mGET /api/health [32m200[0m 185.300 ms - 188[0m
+[0mGET /api/scrape/status [32m200[0m 348.032 ms - 399[0m

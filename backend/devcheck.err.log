@@ -1,0 +1,17 @@
+Port 5000 is already in use. Stop the existing process or change PORT in backend/.env.
+Port 5000 is already in use. Stop the existing process or change PORT in backend/.env.
+[2026-05-06T19:05:59.239Z] ERROR: Port 5000 is already in use. Stop the existing process or change PORT in backend/.env.
+[2026-05-06T19:05:59.255Z] ERROR: Startup scraper failed
+MongoNotConnectedError: Client must be connected before running operations
+    at autoConnect (D:\Scraper\backend\node_modules\mongodb\lib\operations\execute_operation.js:98:19)
+    at executeOperation (D:\Scraper\backend\node_modules\mongodb\lib\operations\execute_operation.js:40:40)
+    at Collection.insertOne (D:\Scraper\backend\node_modules\mongodb\lib\collection.js:154:63)
+    at NativeCollection.<computed> [as insertOne] (D:\Scraper\backend\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:246:33)
+    at Model.$__handleSave (D:\Scraper\backend\node_modules\mongoose\lib\model.js:374:33)
+    at Model.$__save (D:\Scraper\backend\node_modules\mongoose\lib\model.js:496:8)
+    at D:\Scraper\backend\node_modules\kareem\index.js:387:18
+    at D:\Scraper\backend\node_modules\kareem\index.js:113:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2026-05-06T19:44:25.183Z] ERROR: Port 5000 is already in use. Stop the existing process or change PORT in backend/.env.
+[2026-05-06T20:12:07.529Z] ERROR: Port 5001 is already in use. Stop the existing process or change PORT in backend/.env.
+[2026-05-06T20:19:52.100Z] ERROR: Port 5001 is already in use. Stop the existing process or change PORT in backend/.env.

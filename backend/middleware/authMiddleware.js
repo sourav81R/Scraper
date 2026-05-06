@@ -1,22 +1,20 @@
 const jwt = require("jsonwebtoken");
+const { env } = require("../config/env");
+const ApiError = require("../utils/ApiError");
 
 const protect = (req, res, next) => {
+  const authHeader = req.headers.authorization || "";
+  const [scheme, token] = authHeader.split(" ");
+
+  if (scheme !== "Bearer" || !token) {
+    return next(new ApiError(401, "Unauthorized"));
+  }
+
   try {
-    const authHeader = req.headers.authorization || "";
-    const [scheme, token] = authHeader.split(" ");
-
-    if (scheme !== "Bearer" || !token) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Unauthorized" });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-
+    req.user = jwt.verify(token, env.JWT_SECRET);
     return next();
   } catch (error) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+    return next(new ApiError(401, "Unauthorized"));
   }
 };
 

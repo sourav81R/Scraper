@@ -1,17 +1,24 @@
-const runScraper = require("../services/scraper");
+const asyncHandler = require("../utils/asyncHandler");
+const { sendSuccess } = require("../utils/apiResponse");
+const { getLatestScrapeStatus, runScraper } = require("../services/scraper");
 
-const triggerScrape = async (req, res, next) => {
-  try {
-    const stories = await runScraper();
+const triggerScrape = asyncHandler(async (req, res) => {
+  const result = await runScraper({ trigger: "manual" });
 
-    return res.status(200).json({
-      success: true,
-      message: `Scraped ${stories.length} stories`,
-      count: stories.length,
-    });
-  } catch (error) {
-    return next(error);
-  }
-};
+  return sendSuccess(res, {
+    message: `Scraped ${result.meta.count} stories successfully`,
+    data: result.stories,
+    meta: result.meta,
+  });
+});
 
-module.exports = { triggerScrape };
+const getScrapeStatus = asyncHandler(async (req, res) => {
+  const latestRun = await getLatestScrapeStatus();
+
+  return sendSuccess(res, {
+    message: "Scrape status loaded successfully",
+    data: latestRun,
+  });
+});
+
+module.exports = { getScrapeStatus, triggerScrape };

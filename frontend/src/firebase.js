@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
@@ -18,5 +19,15 @@ const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: "select_account",
 });
+
+if (typeof window !== "undefined") {
+  isSupported()
+    .then((supported) => {
+      if (supported && firebaseConfig.measurementId) {
+        getAnalytics(app);
+      }
+    })
+    .catch(() => {});
+}
 
 export { auth, googleProvider };

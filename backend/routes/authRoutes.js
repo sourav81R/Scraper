@@ -1,16 +1,31 @@
 const express = require("express");
 const {
-  register,
-  login,
-  googleSignIn,
+  getCurrentUser,
   getGoogleAuthStatus,
+  googleSignIn,
+  login,
+  register,
 } = require("../controllers/authController");
+const { protect } = require("../middleware/authMiddleware");
+const { authLimiter, googleAuthLimiter } = require("../middleware/rateLimiters");
+const validateRequest = require("../middleware/validateRequest");
+const {
+  googleLoginSchema,
+  loginSchema,
+  registerSchema,
+} = require("../validators/authValidator");
 
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
 router.get("/google/status", getGoogleAuthStatus);
-router.post("/google", googleSignIn);
+router.get("/me", protect, getCurrentUser);
+router.post("/register", authLimiter, validateRequest(registerSchema), register);
+router.post("/login", authLimiter, validateRequest(loginSchema), login);
+router.post(
+  "/google",
+  googleAuthLimiter,
+  validateRequest(googleLoginSchema),
+  googleSignIn
+);
 
 module.exports = router;

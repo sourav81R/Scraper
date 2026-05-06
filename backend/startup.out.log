@@ -38,3 +38,92 @@ Server running on port 5000
 [32m[nodemon] starting `node server.js`[39m
 MongoDB connected successfully
 [31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+MongoDB connected successfully
+Server running on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+MongoDB connected successfully
+Server running on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[2026-05-06T19:05:59.041Z] INFO: MongoDB connected successfully
+[2026-05-06T19:05:59.238Z] INFO: Server running on port 5000
+[2026-05-06T19:05:59.463Z] INFO: Scraper started via startup
+[2026-05-06T19:06:01.245Z] INFO: Scraper completed with 10 stories in 1717ms
+[2026-05-06T19:30:01.319Z] INFO: Scraper started via cron
+[2026-05-06T19:30:03.599Z] INFO: Scraper completed with 10 stories in 2214ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[2026-05-06T19:44:04.188Z] INFO: MongoDB connected successfully
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[2026-05-06T19:44:25.176Z] INFO: MongoDB connected successfully
+[2026-05-06T19:44:25.182Z] INFO: Server running on port 5000
+[2026-05-06T19:44:25.472Z] INFO: Scraper started via startup
+[2026-05-06T19:44:27.943Z] INFO: Scraper completed with 10 stories in 2258ms
+[0mGET / [33m404[0m 1.535 ms - 52[0m
+[0mGET /api/health [32m200[0m 151.054 ms - 188[0m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[2026-05-06T20:12:07.513Z] INFO: MongoDB connected successfully
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[2026-05-06T20:16:06.133Z] INFO: MongoDB connected successfully
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[2026-05-06T20:19:52.070Z] INFO: MongoDB connected successfully
+[2026-05-06T20:19:52.101Z] INFO: Server running on port 5001
+[2026-05-06T20:19:52.550Z] INFO: Scraper started via startup
+[2026-05-06T20:19:54.917Z] INFO: Scraper completed with 10 stories in 2200ms
+[2026-05-06T20:19:57.864Z] INFO: Scraper started via manual
+[2026-05-06T20:19:59.007Z] INFO: Scraper completed with 10 stories in 940ms
+[0mPOST /api/scrape [32m200[0m 1739.122 ms - 5004[0m
+[0mGET /api/scrape/status [32m200[0m 389.348 ms - 399[0m
+[0mGET /api/stories?page=3&limit=9&search=&domain=&sortBy=points&order=desc [32m200[0m 208.144 ms - 2338[0m
+[0mGET /api/stories/stats/overview [32m200[0m 1150.151 ms - 232[0m
+[0mGET /api/stories?page=3&limit=9&search=&domain=&sortBy=points&order=desc [36m304[0m 164.181 ms - -[0m
+[0mGET /api/scrape/status [36m304[0m 83.560 ms - -[0m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
