@@ -34,7 +34,7 @@ const StoryFilters = ({
   ];
 
   return (
-    <div className="glass-panel rounded-[28px] border border-[var(--border)] p-4 shadow-[0_18px_50px_rgba(15,23,42,0.07)] sm:p-5">
+    <div className="glass-panel relative z-30 rounded-[28px] border border-[var(--border)] p-4 shadow-[0_18px_50px_rgba(15,23,42,0.07)] sm:p-5">
       <div className="flex items-center gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-[var(--accent)]">
         <SlidersHorizontal className="h-3.5 w-3.5" />
         Filter stories
