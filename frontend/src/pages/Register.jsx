@@ -76,14 +76,14 @@ const Register = () => {
           title="Save the stories you actually want to revisit, not just skim."
         />
 
-        <section className="glass-panel rounded-[34px] border border-[var(--border)] p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] sm:p-7 lg:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[var(--accent)]">
+        <section className="glass-panel rounded-[34px] border border-(--border) p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] sm:p-7 lg:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-(--accent)">
             Create account
           </p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-[2.65rem]">
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-(--text-primary) sm:text-[2.65rem]">
             Build your own high-signal reading queue
           </h1>
-          <p className="mt-3 text-sm text-[var(--text-secondary)]">
+          <p className="mt-3 text-sm text-(--text-secondary)">
             Create an account to bookmark standout links and keep your tracking flow
             across devices.
           </p>
@@ -125,7 +125,7 @@ const Register = () => {
               rightElement={
                 <button
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
+                  className="text-(--text-muted) transition hover:text-(--text-primary)"
                   onClick={() => setShowPassword((current) => !current)}
                   type="button"
                 >
@@ -148,22 +148,22 @@ const Register = () => {
             </Button>
 
             <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-[var(--border)]" />
-              <span className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">
+              <div className="h-px flex-1 bg-(--border)" />
+              <span className="text-xs uppercase tracking-[0.3em] text-(--text-muted)">
                 Or
               </span>
-              <div className="h-px flex-1 bg-[var(--border)]" />
+              <div className="h-px flex-1 bg-(--border)" />
             </div>
 
             <Button
-              className="w-full justify-center border-white/60 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(248,250,255,0.96))] shadow-[0_16px_40px_rgba(15,23,42,0.08)] hover:border-[var(--border-strong)] hover:bg-white"
+              className="w-full justify-center border-white/60 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(248,250,255,0.96))] shadow-[0_16px_40px_rgba(15,23,42,0.08)] hover:border-(--border-strong) hover:bg-white"
               disabled={!googleAvailable || googleStatusLoading || googleSubmitting}
               onClick={handleGoogle}
               size="lg"
               type="button"
               variant="secondary"
             >
-              <GoogleIcon className="h-[18px] w-[18px]" />
+              <GoogleIcon className="h-4.5 w-4.5" />
               {googleStatusLoading
                 ? "Checking Google sign-in..."
                 : googleSubmitting
@@ -174,9 +174,9 @@ const Register = () => {
             </Button>
           </form>
 
-          <p className="mt-6 text-sm text-[var(--text-secondary)]">
+          <p className="mt-6 text-sm text-(--text-secondary)">
             Already registered?{" "}
-            <Link className="font-medium text-[var(--accent)]" to="/login">
+            <Link className="font-medium text-(--accent)" to="/login">
               Log in here
             </Link>
           </p>
