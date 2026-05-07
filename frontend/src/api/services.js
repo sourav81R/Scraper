@@ -24,6 +24,10 @@ export const authApi = {
 };
 
 export const storiesApi = {
+  async home() {
+    const { data } = await api.get("/api/stories/home");
+    return data;
+  },
   async list(params) {
     const { data } = await api.get("/api/stories", { params });
     return data;

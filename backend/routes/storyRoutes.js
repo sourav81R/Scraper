@@ -2,6 +2,7 @@ const express = require("express");
 const {
   getAllStories,
   getBookmarkedStories,
+  getHomeDashboard,
   getStoryById,
   getStoryStats,
   toggleBookmark,
@@ -15,6 +16,7 @@ const {
 
 const router = express.Router();
 
+router.get("/home", getHomeDashboard);
 router.get("/stats/overview", getStoryStats);
 router.get("/bookmarks", protect, getBookmarkedStories);
 router.get("/", validateRequest(storyQuerySchema), getAllStories);

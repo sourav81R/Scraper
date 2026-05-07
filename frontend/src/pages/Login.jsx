@@ -1,5 +1,5 @@
 import { Eye, EyeOff, LogIn } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthShowcase from "../components/AuthShowcase";
 import Button from "../components/Button";
@@ -13,7 +13,13 @@ import { normalizeApiError } from "../lib/utils";
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { googleAvailable, googleStatusLoading, login, loginWithGoogle } = useAuth();
+  const {
+    googleAvailable,
+    googleStatusLoading,
+    login,
+    loginWithGoogle,
+    refreshGoogleStatus,
+  } = useAuth();
   const { pushToast } = useToast();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -22,6 +28,10 @@ const Login = () => {
   const [error, setError] = useState("");
 
   const nextRoute = location.state?.from || "/stories";
+
+  useEffect(() => {
+    refreshGoogleStatus();
+  }, [refreshGoogleStatus]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

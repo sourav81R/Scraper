@@ -40,6 +40,50 @@ const buildSort = ({ sortBy, order }) => {
   }
 };
 
+const buildStoryStats = async () => {
+  const [totalStories, totals, domains, latestScrape, totalUsers] = await Promise.all([
+    Story.countDocuments(),
+    Story.aggregate([
+      {
+        $group: {
+          _id: null,
+          avgPoints: { $avg: "$points" },
+          avgComments: { $avg: "$commentsCount" },
+          maxPoints: { $max: "$points" },
+        },
+      },
+    ]),
+    Story.distinct("domain"),
+    ScrapeRun.findOne({ status: "success" }).sort({ finishedAt: -1 }).lean(),
+    User.countDocuments(),
+  ]);
+
+  const bookmarkAggregation = await User.aggregate([
+    {
+      $project: {
+        bookmarkCount: { $size: "$bookmarks" },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalBookmarks: { $sum: "$bookmarkCount" },
+      },
+    },
+  ]);
+
+  return {
+    totalStories,
+    totalUsers,
+    totalBookmarks: bookmarkAggregation[0]?.totalBookmarks || 0,
+    avgPoints: Math.round(totals[0]?.avgPoints || 0),
+    avgComments: Math.round(totals[0]?.avgComments || 0),
+    maxPoints: totals[0]?.maxPoints || 0,
+    uniqueDomains: domains.length,
+    lastScrapedAt: latestScrape?.finishedAt || latestScrape?.createdAt || null,
+  };
+};
+
 const getAllStories = asyncHandler(async (req, res) => {
   const { page, limit, search, domain, sortBy, order } = req.query;
   const query = buildStoryQuery({ search, domain });
@@ -69,6 +113,24 @@ const getAllStories = asyncHandler(async (req, res) => {
         availableDomains: domainOptions.sort((a, b) => a.localeCompare(b)),
       },
       lastScrapedAt: latestScrape?.finishedAt || null,
+    },
+  });
+});
+
+const getHomeDashboard = asyncHandler(async (req, res) => {
+  const [stories, stats] = await Promise.all([
+    Story.find()
+      .sort({ points: -1, scrapedAt: -1 })
+      .limit(3)
+      .lean(),
+    buildStoryStats(),
+  ]);
+
+  return sendSuccess(res, {
+    message: "Homepage data loaded successfully",
+    data: {
+      stories,
+      stats,
     },
   });
 });
@@ -144,55 +206,18 @@ const toggleBookmark = asyncHandler(async (req, res) => {
 });
 
 const getStoryStats = asyncHandler(async (req, res) => {
-  const [totalStories, totals, domains, latestScrape, totalUsers] = await Promise.all([
-    Story.countDocuments(),
-    Story.aggregate([
-      {
-        $group: {
-          _id: null,
-          avgPoints: { $avg: "$points" },
-          avgComments: { $avg: "$commentsCount" },
-          maxPoints: { $max: "$points" },
-        },
-      },
-    ]),
-    Story.distinct("domain"),
-    ScrapeRun.findOne({ status: "success" }).sort({ finishedAt: -1 }).lean(),
-    User.countDocuments(),
-  ]);
-
-  const bookmarkAggregation = await User.aggregate([
-    {
-      $project: {
-        bookmarkCount: { $size: "$bookmarks" },
-      },
-    },
-    {
-      $group: {
-        _id: null,
-        totalBookmarks: { $sum: "$bookmarkCount" },
-      },
-    },
-  ]);
+  const stats = await buildStoryStats();
 
   return sendSuccess(res, {
     message: "Story stats loaded successfully",
-    data: {
-      totalStories,
-      totalUsers,
-      totalBookmarks: bookmarkAggregation[0]?.totalBookmarks || 0,
-      avgPoints: Math.round(totals[0]?.avgPoints || 0),
-      avgComments: Math.round(totals[0]?.avgComments || 0),
-      maxPoints: totals[0]?.maxPoints || 0,
-      uniqueDomains: domains.length,
-      lastScrapedAt: latestScrape?.finishedAt || latestScrape?.createdAt || null,
-    },
+    data: stats,
   });
 });
 
 module.exports = {
   getAllStories,
   getBookmarkedStories,
+  getHomeDashboard,
   getStoryById,
   getStoryStats,
   toggleBookmark,

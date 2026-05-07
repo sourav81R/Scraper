@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { storiesApi } from "../api/services";
 import PageTransition from "../components/PageTransition";
 import SkeletonGrid from "../components/SkeletonGrid";
 import StatCard from "../components/StatCard";
@@ -39,7 +40,7 @@ const featureCards = [
 
 const Home = () => {
   const navigate = useNavigate();
-  const { fetchStats, fetchStories, toggleBookmark } = useStories();
+  const { toggleBookmark } = useStories();
   const { isAuthenticated, user } = useAuth();
   const { pushToast } = useToast();
   const [stats, setStats] = useState(null);
@@ -53,14 +54,11 @@ const Home = () => {
     const loadDashboard = async () => {
       try {
         setLoading(true);
-        const [statsResponse, storiesResponse] = await Promise.all([
-          fetchStats(),
-          fetchStories({ page: 1, limit: 3, sortBy: "points", order: "desc" }),
-        ]);
+        const response = await storiesApi.home();
 
         if (!cancelled) {
-          setStats(statsResponse.data);
-          setStories(storiesResponse.data);
+          setStats(response.data.stats);
+          setStories(response.data.stories);
         }
       } catch (error) {
         if (!cancelled) {
@@ -82,7 +80,7 @@ const Home = () => {
     return () => {
       cancelled = true;
     };
-  }, [fetchStats, fetchStories, pushToast]);
+  }, [pushToast]);
 
   const handleBookmark = async (storyId) => {
     try {

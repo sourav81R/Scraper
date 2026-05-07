@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
   const [status, setStatus] = useState("loading");
   const [googleAvailable, setGoogleAvailable] = useState(false);
-  const [googleStatusLoading, setGoogleStatusLoading] = useState(true);
+  const [googleStatusLoading, setGoogleStatusLoading] = useState(false);
 
   const persistSession = useCallback((nextToken, nextUser) => {
     setToken(nextToken);
@@ -55,6 +55,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const refreshGoogleStatus = useCallback(async () => {
+    setGoogleStatusLoading(true);
+
     try {
       const response = await authApi.googleStatus();
       setGoogleAvailable(Boolean(response.data?.configured));
@@ -80,10 +82,6 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
   }, [clearSession, persistSession]);
-
-  useEffect(() => {
-    refreshGoogleStatus();
-  }, [refreshGoogleStatus]);
 
   useEffect(() => {
     if (!token) {

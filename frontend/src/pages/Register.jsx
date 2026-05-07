@@ -1,5 +1,5 @@
 import { Eye, EyeOff, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthShowcase from "../components/AuthShowcase";
 import Button from "../components/Button";
@@ -12,14 +12,23 @@ import { normalizeApiError } from "../lib/utils";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { googleAvailable, googleStatusLoading, loginWithGoogle, register } =
-    useAuth();
+  const {
+    googleAvailable,
+    googleStatusLoading,
+    loginWithGoogle,
+    refreshGoogleStatus,
+    register,
+  } = useAuth();
   const { pushToast } = useToast();
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    refreshGoogleStatus();
+  }, [refreshGoogleStatus]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
