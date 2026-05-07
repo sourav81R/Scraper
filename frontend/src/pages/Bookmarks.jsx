@@ -80,14 +80,14 @@ const Bookmarks = () => {
   return (
     <PageTransition className="px-4 pb-16 pt-8 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
-        <section className="glass-panel rounded-[36px] border border-[var(--border)] px-6 py-8 sm:px-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[var(--accent)]">
+        <section className="glass-panel rounded-[36px] border border-(--border) px-6 py-8 sm:px-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-(--accent)">
             Personal reading queue
           </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-[var(--text-primary)]">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-(--text-primary)">
             Keep the stories worth revisiting in one calm, searchable place.
           </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--text-secondary)]">
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-(--text-secondary)">
             Your bookmark list stays lightweight and focused, making it easier to
             come back to deeper reads without losing your context.
           </p>
