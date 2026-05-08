@@ -214,16 +214,16 @@ const Stories = () => {
           />
         </section>
 
-        <section className="glass-panel rounded-[36px] border border-[var(--border)] px-6 py-8 sm:px-8">
+        <section className="glass-panel rounded-[36px] border border-(--border) px-6 py-8 sm:px-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[var(--accent)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-(--accent)">
                 Story feed
               </p>
-              <h1 className="mt-4 text-4xl font-semibold tracking-tight text-[var(--text-primary)]">
+              <h1 className="mt-4 text-4xl font-semibold tracking-tight text-(--text-primary)">
                 Browse, filter, and save the strongest Hacker News links.
               </h1>
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--text-secondary)]">
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-(--text-secondary)">
                 Use search, domain filters, and alternate sorting to move from noise
                 to signal quickly, then bookmark stories into a persistent queue.
               </p>
@@ -303,8 +303,8 @@ const Stories = () => {
         ) : null}
 
         {pagination ? (
-          <div className="glass-panel flex flex-col gap-4 rounded-[28px] border border-[var(--border)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-[var(--text-secondary)]">
+          <div className="glass-panel flex flex-col gap-4 rounded-[28px] border border-(--border) px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-(--text-secondary)">
               Page {pagination.page} of {pagination.totalPages}
             </p>
             <div className="flex gap-3">
