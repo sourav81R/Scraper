@@ -9,6 +9,7 @@ const toastIcons = {
   success: CheckCircle2,
   error: TriangleAlert,
   info: Info,
+  warning: TriangleAlert,
 };
 
 const toastStyles = {
@@ -18,6 +19,8 @@ const toastStyles = {
     "border-rose-300/45 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(255,241,242,0.98))] text-rose-950",
   info:
     "border-sky-300/40 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(240,249,255,0.98))] text-sky-950",
+  warning:
+    "border-amber-300/45 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(255,251,235,0.98))] text-amber-950",
 };
 
 export const ToastProvider = ({ children }) => {

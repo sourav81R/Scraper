@@ -60,3 +60,45 @@ export const copyText = async (value) => {
 
 export const normalizeApiError = (error, fallbackMessage) =>
   error?.response?.data?.message || error?.message || fallbackMessage;
+
+export const readSessionCache = (key, fallbackValue = null) => {
+  if (typeof window === "undefined") {
+    return fallbackValue;
+  }
+
+  try {
+    const rawValue = window.sessionStorage.getItem(key);
+
+    if (!rawValue) {
+      return fallbackValue;
+    }
+
+    return JSON.parse(rawValue);
+  } catch (error) {
+    return fallbackValue;
+  }
+};
+
+export const writeSessionCache = (key, value) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    // Ignore storage failures so the UI still works without cache support.
+  }
+};
+
+export const removeSessionCache = (key) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.removeItem(key);
+  } catch (error) {
+    // Ignore storage failures so the UI still works without cache support.
+  }
+};

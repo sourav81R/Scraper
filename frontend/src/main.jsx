@@ -6,11 +6,9 @@ import { AppProviders } from "./providers/AppProviders";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <AppProviders>
-        <App />
-      </AppProviders>
-    </BrowserRouter>
-  </React.StrictMode>
+  <BrowserRouter>
+    <AppProviders>
+      <App />
+    </AppProviders>
+  </BrowserRouter>
 );

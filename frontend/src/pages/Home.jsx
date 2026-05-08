@@ -18,7 +18,12 @@ import Button from "../components/Button";
 import { useStories } from "../context/StoryContext";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
-import { formatRelativeTime, normalizeApiError } from "../lib/utils";
+import {
+  formatRelativeTime,
+  normalizeApiError,
+  readSessionCache,
+  writeSessionCache,
+} from "../lib/utils";
 
 const featureCards = [
   {
@@ -37,15 +42,19 @@ const featureCards = [
     icon: Globe2,
   },
 ];
+const HOME_DASHBOARD_CACHE_KEY = "hn-tracker-home-dashboard";
 
 const Home = () => {
   const navigate = useNavigate();
   const { toggleBookmark } = useStories();
   const { isAuthenticated, user } = useAuth();
   const { pushToast } = useToast();
-  const [stats, setStats] = useState(null);
-  const [stories, setStories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [cachedDashboard] = useState(() =>
+    readSessionCache(HOME_DASHBOARD_CACHE_KEY, null)
+  );
+  const [stats, setStats] = useState(() => cachedDashboard?.stats || null);
+  const [stories, setStories] = useState(() => cachedDashboard?.stories || []);
+  const [loading, setLoading] = useState(() => !cachedDashboard);
   const [bookmarkPendingId, setBookmarkPendingId] = useState("");
 
   useEffect(() => {
@@ -53,19 +62,27 @@ const Home = () => {
 
     const loadDashboard = async () => {
       try {
-        setLoading(true);
+        if (!cachedDashboard) {
+          setLoading(true);
+        }
+
         const response = await storiesApi.home();
 
         if (!cancelled) {
           setStats(response.data.stats);
           setStories(response.data.stories);
+          writeSessionCache(HOME_DASHBOARD_CACHE_KEY, response.data);
         }
       } catch (error) {
         if (!cancelled) {
           pushToast({
-            title: "Unable to load the dashboard",
-            description: normalizeApiError(error, "Please try again shortly."),
-            variant: "error",
+            title: cachedDashboard
+              ? "Showing saved dashboard data"
+              : "Unable to load the dashboard",
+            description: cachedDashboard
+              ? "The latest refresh failed, so the last loaded dashboard is still available."
+              : normalizeApiError(error, "Please try again shortly."),
+            variant: cachedDashboard ? "warning" : "error",
           });
         }
       } finally {
@@ -80,7 +97,7 @@ const Home = () => {
     return () => {
       cancelled = true;
     };
-  }, [pushToast]);
+  }, [cachedDashboard, pushToast]);
 
   const handleBookmark = async (storyId) => {
     try {

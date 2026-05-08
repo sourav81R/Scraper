@@ -89,7 +89,7 @@ const getAllStories = asyncHandler(async (req, res) => {
   const query = buildStoryQuery({ search, domain });
   const sort = buildSort({ sortBy, order });
 
-  const [stories, total, latestScrape, domainOptions] = await Promise.all([
+  const [stories, total, latestScrape, domainOptions, stats] = await Promise.all([
     Story.find(query)
       .sort(sort)
       .skip((page - 1) * limit)
@@ -98,6 +98,7 @@ const getAllStories = asyncHandler(async (req, res) => {
     Story.countDocuments(query),
     ScrapeRun.findOne({ status: "success" }).sort({ finishedAt: -1 }).lean(),
     Story.distinct("domain"),
+    buildStoryStats(),
   ]);
 
   return sendSuccess(res, {
@@ -113,6 +114,8 @@ const getAllStories = asyncHandler(async (req, res) => {
         availableDomains: domainOptions.sort((a, b) => a.localeCompare(b)),
       },
       lastScrapedAt: latestScrape?.finishedAt || null,
+      scrapeStatus: latestScrape,
+      stats,
     },
   });
 });

@@ -17,60 +17,90 @@ import {
   normalizeApiError,
 } from "../lib/utils";
 
+const defaultFilters = {
+  page: 1,
+  limit: 9,
+  search: "",
+  domain: "",
+  sortBy: "points",
+  order: "desc",
+};
+
 const Stories = () => {
   const { isAuthenticated, user } = useAuth();
   const {
-    fetchScrapeStatus,
-    fetchStats,
     fetchStories,
+    peekStories,
+    scrapeStatus: cachedScrapeStatus,
+    stats: cachedStats,
     toggleBookmark,
     triggerScrape,
   } = useStories();
   const { pushToast } = useToast();
-  const [stories, setStories] = useState([]);
-  const [stats, setStats] = useState(null);
-  const [pagination, setPagination] = useState(null);
-  const [domainOptions, setDomainOptions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState(defaultFilters);
+  const initialStoryResponse = peekStories(defaultFilters);
+  const [stories, setStories] = useState(() => initialStoryResponse?.data || []);
+  const [stats, setStats] = useState(
+    () => initialStoryResponse?.meta?.stats || cachedStats
+  );
+  const [pagination, setPagination] = useState(
+    () => initialStoryResponse?.meta?.pagination || null
+  );
+  const [domainOptions, setDomainOptions] = useState(
+    () => initialStoryResponse?.meta?.filters?.availableDomains || []
+  );
+  const [loading, setLoading] = useState(() => !initialStoryResponse);
   const [refreshing, setRefreshing] = useState(false);
   const [bookmarkPendingId, setBookmarkPendingId] = useState("");
-  const [scrapeStatus, setScrapeStatus] = useState(null);
-  const [filters, setFilters] = useState({
-    page: 1,
-    limit: 9,
-    search: "",
-    domain: "",
-    sortBy: "points",
-    order: "desc",
-  });
+  const [scrapeStatus, setScrapeStatus] = useState(
+    () => initialStoryResponse?.meta?.scrapeStatus || cachedScrapeStatus
+  );
   const deferredSearch = useDeferredValue(filters.search);
 
   useEffect(() => {
     let cancelled = false;
 
     const loadStoryPage = async () => {
+      const query = { ...filters, search: deferredSearch };
+      const cachedStoriesResponse = peekStories(query);
+
       try {
-        setLoading(true);
-        const query = { ...filters, search: deferredSearch };
-        const [storiesResponse, statsResponse, scrapeResponse] = await Promise.all([
-          fetchStories(query),
-          fetchStats(),
-          fetchScrapeStatus(),
-        ]);
+        if (cachedStoriesResponse) {
+          setStories(cachedStoriesResponse.data);
+          setPagination(cachedStoriesResponse.meta.pagination);
+          setDomainOptions(cachedStoriesResponse.meta.filters.availableDomains);
+          setStats(cachedStoriesResponse.meta.stats || cachedStats);
+          setScrapeStatus(
+            cachedStoriesResponse.meta.scrapeStatus || cachedScrapeStatus
+          );
+          setLoading(false);
+        } else {
+          setLoading(true);
+        }
+
+        const storiesResponse = await fetchStories(query, {
+          force: Boolean(cachedStoriesResponse),
+        });
 
         if (!cancelled) {
           setStories(storiesResponse.data);
           setPagination(storiesResponse.meta.pagination);
           setDomainOptions(storiesResponse.meta.filters.availableDomains);
-          setStats(statsResponse.data);
-          setScrapeStatus(scrapeResponse.data);
+          setStats(storiesResponse.meta.stats || cachedStats);
+          setScrapeStatus(
+            storiesResponse.meta.scrapeStatus || cachedScrapeStatus
+          );
         }
       } catch (error) {
         if (!cancelled) {
           pushToast({
-            title: "Unable to load stories",
-            description: normalizeApiError(error, "Please try again."),
-            variant: "error",
+            title: cachedStoriesResponse
+              ? "Showing saved stories"
+              : "Unable to load stories",
+            description: cachedStoriesResponse
+              ? "The latest refresh failed, so the last loaded stories are still on screen."
+              : normalizeApiError(error, "Please try again."),
+            variant: cachedStoriesResponse ? "warning" : "error",
           });
         }
       } finally {
@@ -87,11 +117,12 @@ const Stories = () => {
     };
   }, [
     deferredSearch,
-    fetchScrapeStatus,
-    fetchStats,
     fetchStories,
     filters,
+    peekStories,
     pushToast,
+    cachedScrapeStatus,
+    cachedStats,
   ]);
 
   const handleBookmark = async (storyId) => {
@@ -122,12 +153,12 @@ const Stories = () => {
         { ...filters, search: deferredSearch },
         { force: true }
       );
-      const refreshedStatus = await fetchScrapeStatus({ force: true });
 
       setStories(refreshedStories.data);
       setPagination(refreshedStories.meta.pagination);
       setDomainOptions(refreshedStories.meta.filters.availableDomains);
-      setScrapeStatus(refreshedStatus.data);
+      setStats(refreshedStories.meta.stats || null);
+      setScrapeStatus(refreshedStories.meta.scrapeStatus || null);
 
       pushToast({
         title: "Stories refreshed",
@@ -212,14 +243,7 @@ const Stories = () => {
           availableDomains={domainOptions}
           domain={filters.domain}
           onClear={() =>
-            setFilters({
-              page: 1,
-              limit: 9,
-              search: "",
-              domain: "",
-              sortBy: "points",
-              order: "desc",
-            })
+            setFilters(defaultFilters)
           }
           onDomainChange={(value) =>
             setFilters((current) => ({ ...current, domain: value, page: 1 }))

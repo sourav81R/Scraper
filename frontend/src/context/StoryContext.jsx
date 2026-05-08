@@ -8,18 +8,60 @@ import {
 } from "react";
 import { scrapeApi, storiesApi } from "../api/services";
 import { useAuth } from "./AuthContext";
-import { serializeStoryQuery } from "../lib/utils";
+import {
+  readSessionCache,
+  removeSessionCache,
+  serializeStoryQuery,
+  writeSessionCache,
+} from "../lib/utils";
 
 const StoryContext = createContext(null);
+const STORIES_CACHE_KEY = "hn-tracker-story-cache";
+const STATS_CACHE_KEY = "hn-tracker-stats-cache";
+const SCRAPE_STATUS_CACHE_KEY = "hn-tracker-scrape-status-cache";
+
+const readStoryResponseCache = () => {
+  const storedCache = readSessionCache(STORIES_CACHE_KEY, {});
+
+  if (!storedCache || typeof storedCache !== "object") {
+    return new Map();
+  }
+
+  return new Map(Object.entries(storedCache));
+};
 
 export const StoryProvider = ({ children }) => {
   const { updateBookmarks, user } = useAuth();
-  const cacheRef = useRef(new Map());
-  const [stats, setStats] = useState(null);
-  const [scrapeStatus, setScrapeStatus] = useState(null);
+  const cacheRef = useRef(readStoryResponseCache());
+  const [stats, setStatsState] = useState(() =>
+    readSessionCache(STATS_CACHE_KEY, null)
+  );
+  const [scrapeStatus, setScrapeStatusState] = useState(() =>
+    readSessionCache(SCRAPE_STATUS_CACHE_KEY, null)
+  );
+
+  const persistStoryCache = useCallback(() => {
+    writeSessionCache(STORIES_CACHE_KEY, Object.fromEntries(cacheRef.current));
+  }, []);
+
+  const setStats = useCallback((nextStats) => {
+    setStatsState(nextStats);
+    writeSessionCache(STATS_CACHE_KEY, nextStats);
+  }, []);
+
+  const setScrapeStatus = useCallback((nextStatus) => {
+    setScrapeStatusState(nextStatus);
+    writeSessionCache(SCRAPE_STATUS_CACHE_KEY, nextStatus);
+  }, []);
 
   const invalidateStories = useCallback(() => {
     cacheRef.current.clear();
+    removeSessionCache(STORIES_CACHE_KEY);
+  }, []);
+
+  const peekStories = useCallback((query) => {
+    const cacheKey = serializeStoryQuery(query);
+    return cacheRef.current.get(cacheKey) || null;
   }, []);
 
   const fetchStories = useCallback(async (query, { force = false } = {}) => {
@@ -31,8 +73,15 @@ export const StoryProvider = ({ children }) => {
 
     const response = await storiesApi.list(query);
     cacheRef.current.set(cacheKey, response);
+    if (response.meta?.stats) {
+      setStats(response.meta.stats);
+    }
+    if (response.meta?.scrapeStatus) {
+      setScrapeStatus(response.meta.scrapeStatus);
+    }
+    persistStoryCache();
     return response;
-  }, []);
+  }, [persistStoryCache, setScrapeStatus, setStats]);
 
   const fetchStats = useCallback(
     async ({ force = false } = {}) => {
@@ -44,7 +93,7 @@ export const StoryProvider = ({ children }) => {
       setStats(response.data);
       return response;
     },
-    [stats]
+    [setStats, stats]
   );
 
   const fetchScrapeStatus = useCallback(
@@ -57,7 +106,7 @@ export const StoryProvider = ({ children }) => {
       setScrapeStatus(response.data);
       return response;
     },
-    [scrapeStatus]
+    [scrapeStatus, setScrapeStatus]
   );
 
   const fetchBookmarks = useCallback(async () => storiesApi.bookmarks(), []);
@@ -96,6 +145,7 @@ export const StoryProvider = ({ children }) => {
   const value = useMemo(
     () => ({
       fetchBookmarks,
+      peekStories,
       fetchScrapeStatus,
       fetchStats,
       fetchStories,
@@ -107,6 +157,7 @@ export const StoryProvider = ({ children }) => {
     }),
     [
       fetchBookmarks,
+      peekStories,
       fetchScrapeStatus,
       fetchStats,
       fetchStories,
